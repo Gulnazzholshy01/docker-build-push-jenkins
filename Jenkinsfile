@@ -12,21 +12,24 @@ pipeline{
     }
     
     stages{
-       stage('Building image') {
-        steps{
-            script {
-              sh "docker build -t ${imagename}:${version} ."
+        stage('Building image') {
+            steps{
+                script {
+                    sh "docker build -t ${imagename}:${version} ."
+                }
             }
         }
-    }
-    //    stage('Deploy Image') {
-    //    steps{
-    //      script {
-    //         docker.withRegistry( '', registryCredential ) {
-    //         dockerImage.push()
-    //       }
-    //     }
-    //   }
-    // }
+        stage('Push Image to DockerHub') {
+            steps{
+                script {
+                    withCredentials([string(credentialsId: 'docker-hub-credentials', variable: 'dockerhubpwd')]) {
+                    sh '''
+                        docker login -u gulnaz1357 -p ${dockerhubpwd}
+                        docker push ${imagename}:${version}
+                    '''
+                }
+               }
+            }
+        }
     }
 }
