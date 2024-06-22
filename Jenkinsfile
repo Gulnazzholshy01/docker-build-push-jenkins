@@ -6,9 +6,7 @@ pipeline{
     }
     environment{
         imagename = "gulnaz1357/test"
-        version="v1"
-        registry = "<dockerhub-username>/<repo-name>"
-        registryCredential = '<dockerhub-credential-name>'        
+        version="v1"    
     }
     
     stages{
