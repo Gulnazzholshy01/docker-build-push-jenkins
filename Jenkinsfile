@@ -1,14 +1,18 @@
 pipeline{
     agent any
+
     options{
         buildDiscarder(logRotator(numToKeepStr: '5', daysToKeepStr: '5'))
         timestamps()
     }
+    parameters {
+
+    }
     environment{
         AWS_ACCOUNT_ID="700930849074"
         AWS_DEFAULT_REGION="us-east-1" 
-        IMAGE_REPO_NAME="test-repo"
-        IMAGE_TAG="v2"
+        IMAGE_REPO_NAME="demo-ecr"
+        IMAGE_TAG="v_${env.BUILD_NUMBER}"
         REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
     }
     
@@ -18,7 +22,7 @@ pipeline{
         stage('Building image') {
             steps{
                 script {
-                    sh "docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG ."
+                    sh "docker build -t $REPOSITORY_URI:$IMAGE_TAG ."
                 }
             }
         }
@@ -37,24 +41,16 @@ pipeline{
         stage('Pushing into ECR') {
             steps{ 
                 script {
-                    sh "docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $REPOSITORY_URI:$IMAGE_TAG"
                     sh "docker push $REPOSITORY_URI:$IMAGE_TAG"
                 }
             }
         }
-
-        //Pushing Docker Images into AWS ECR
-        // stage('Push Image to DockerHub') {
-        //     steps{
-        //         script {
-        //             withCredentials([string(credentialsId: 'docker-hub-credentials', variable: 'dockerhubpwd')]) {
-        //             sh '''
-        //                 docker login -u gulnaz1357 -p ${dockerhubpwd}
-        //                 docker push ${imagename}:${version}
-        //             '''
-        //         }
-        //        }
-        //     }
-        // }
+    }
+    
+    post {
+        success {
+            // Triggering app-deploy pipeline 
+            build job: 'app-deploy', parameters: [string(name: 'IMAGE_TAG', value: "${IMAGE_TAG}")]
+        }
     }
 }
