@@ -5,9 +5,7 @@ pipeline{
         buildDiscarder(logRotator(numToKeepStr: '5', daysToKeepStr: '5'))
         timestamps()
     }
-    parameters {
-
-    }
+ 
     environment{
         AWS_ACCOUNT_ID="700930849074"
         AWS_DEFAULT_REGION="us-east-1" 
@@ -46,7 +44,7 @@ pipeline{
             }
         }
     }
-    
+
     post {
         success {
             // Triggering app-deploy pipeline 
