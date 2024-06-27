@@ -43,6 +43,15 @@ pipeline{
                 }
             }
         }
+
+        //Removing docker image
+        stage('Removing Docker image') {
+            steps{ 
+                script {
+                    sh "docker image rm $REPOSITORY_URI:$IMAGE_TAG"
+                }
+            }
+        }
     }
 
     post {
