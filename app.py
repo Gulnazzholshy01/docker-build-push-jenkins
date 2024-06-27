@@ -6,7 +6,7 @@ app = FastAPI()
 # comment
 @app.get("/")
 def read_root():
-    return {"Hello": "WELCOME TO DEMO"}
+    return {"Hello": "WELCOME TO DEMO - V1"}
 
 @app.get("/jenkins")
 def read_root():
